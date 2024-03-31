@@ -14,8 +14,8 @@ router.get('/balance', authMiddleware, (req, res) => {
 })
 
 const transferSchema = z.object({
-    to: String,
-    amount: String
+    to: z.string(),
+    amount: z.string()
 })
 
 router.post('/transfer', authMiddleware, async (req, res) => {
@@ -29,6 +29,8 @@ router.post('/transfer', authMiddleware, async (req, res) => {
     const session = await mongoose.startSession();
     session.startTransaction();
 
+    const amount = Number(req.body.amount);
+    
     const account = await Account.findOne({ userId: req.userId }).session(session);
     if (!account || account.balance < amount) {
         await session.abortTransaction();
@@ -37,7 +39,7 @@ router.post('/transfer', authMiddleware, async (req, res) => {
         });
     }
 
-    const toAccount = await Account.findOne({ userId: req.to }).session(session);
+    const toAccount = await Account.findOne({ userId: req.body.to }).session(session);
     if (!toAccount) {
         await session.abortTransaction();
         return res.status(400).json({

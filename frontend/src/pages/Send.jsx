@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import axios from "axios";
 
 const Send = () => {
 	const [searchParams, setSearchParams] = useSearchParams();
@@ -43,8 +44,8 @@ const Send = () => {
 								/>
 							</div>
 							<button
-								onClick={() => {
-									axios.post(
+								onClick={async() => {
+									await axios.post(
 										"http://localhost:3000/api/v1/account/transfer",
 										{
 											to: id,
